@@ -3,16 +3,71 @@ $(document).ready(function() {
     
     var map;
     var markers = [];
+
+    // Create new map
     function initMap() {
+        var styles = [
+            {
+                "featureType": "all",
+                "stylers": [
+                    {
+                        "saturation": 0
+                    },
+                    {
+                        "hue": "#e7ecf0"
+                    }
+                ]
+            },
+            {
+                "featureType": "road",
+                "stylers": [
+                    {
+                        "saturation": -70
+                    }
+                ]
+            },
+            {
+                "featureType": "transit",
+                "stylers": [
+                    {
+                        "visibility": "off"
+                    }
+                ]
+            },
+            {
+                "featureType": "poi",
+                "stylers": [
+                    {
+                        "visibility": "off"
+                    }
+                ]
+            },
+            {
+                "featureType": "water",
+                "stylers": [
+                    {
+                        "color": "#3ec7c9"
+                    },
+                    {
+                        "visibility": "on"
+                    }
+                ]
+            }
+        ]
+
         map = new google.maps.Map($('#map')[0], {
             zoom: 12,
-            center: {lat: 51.4, lng: 5.4}
+            center: {lat: 51.4, lng: 5.4},
+            styles: styles,
+            mapTypeControl: false
         });
 
         var locations = [
-            {title: 'Eindhoven', location: {lat: 51.441642, lng: 5.469722}},
-            {title: 'SSC Eindhoven', location: {lat: 51.451915, lng: 5.489143}},
-            {title: 'Sharon', location: {lat:  51.642632, lng:  4.541374}}
+            {title: 'Sri Lanka', location: {lat: 7.873054, lng: 80.771797}},
+            {title: 'ValTech Eindhoven', location: {lat: 51.443442, lng: 5.46138}},
+            {title: 'Sharon', location: {lat:  51.642632, lng: 4.541374}},
+            {title: 'Australia', location: {lat:  -25.274398, lng: 133.775136}},
+            {title: 'Canada', location: {lat:  56.130366, lng: -106.346771}}
         ];
 
         var largeInfowindow = new google.maps.InfoWindow({
@@ -20,28 +75,41 @@ $(document).ready(function() {
         });
         var bounds = new google.maps.LatLngBounds();
 
-        var iconImg = {
+        var defaultIcon = {
             url: 'http://findicons.com/files/icons/2498/party_elements/256/2.png',
             scaledSize: new google.maps.Size(25, 25), // scaled size
             origin: new google.maps.Point(0, 0),
             anchor: new google.maps.Point(0, 0)
         }
+        var highlightedIcon = {
+            url: 'http://findicons.com/files/icons/2498/party_elements/256/2.png',
+            scaledSize: new google.maps.Size(35, 35), // scaled size
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(5, 5)
+        }
+
 
         for (var i = 0; i < locations.length; i++) {
             var position = locations[i].location;
             var title = locations[i].title;
-            // var color = locations[i].color;
 
             var marker = new google.maps.Marker({
                 map: map,
                 position: position,
                 title: title,
-                icon: iconImg,
+                icon: defaultIcon,
                 animation: google.maps.Animation.DROP,
                 id: i
             });
             // push marker to array of markers
             markers.push(marker);
+            // icon change
+            marker.addListener('mouseover', function() {
+                this.setIcon(highlightedIcon);
+            });
+            marker.addListener('mouseout', function() {
+                this.setIcon(defaultIcon);
+            });
             // extend boundaries of map for each marker
             bounds.extend(marker.position);
             // create event to open infowindow

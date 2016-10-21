@@ -18,16 +18,18 @@
         // width: 200px;
 
         #show-listings, #hide-listings {
-            padding: 5px;
+            padding: 8px;
             margin: 3px;
-            background-color: #039ba5;
+            box-shadow: 0 0 5px #eeeeee;
+            background-color: #3ec7c9;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
         #show-listings:hover, #hide-listings:hover {
-            background-color: #777;
+            box-shadow: 1px 1px 6px #888888;
+            background-color: #3ec7c9;
         }
     }
 
