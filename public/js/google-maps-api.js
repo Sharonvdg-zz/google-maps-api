@@ -15,17 +15,28 @@ $(document).ready(function() {
             {title: 'Sharon', location: {lat:  51.642632, lng:  4.541374}}
         ];
 
-        var largeInfowindow = new google.maps.InfoWindow();
+        var largeInfowindow = new google.maps.InfoWindow({
+            maxWidth: 200
+        });
         var bounds = new google.maps.LatLngBounds();
+
+        var iconImg = {
+            url: 'http://findicons.com/files/icons/2498/party_elements/256/2.png',
+            scaledSize: new google.maps.Size(25, 25), // scaled size
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(0, 0)
+        }
 
         for (var i = 0; i < locations.length; i++) {
             var position = locations[i].location;
             var title = locations[i].title;
+            // var color = locations[i].color;
 
             var marker = new google.maps.Marker({
                 map: map,
                 position: position,
                 title: title,
+                icon: iconImg,
                 animation: google.maps.Animation.DROP,
                 id: i
             });
@@ -46,7 +57,7 @@ $(document).ready(function() {
         function populateInfoWindow(marker, infowindow) {
             if (infowindow.marker != marker) {
                 infowindow.marker = marker;
-                infowindow.setContent('<div>' + marker.title + '</div>');
+                infowindow.setContent('<div>' + marker.title + ' ' + marker.position + '</div>');
                 infowindow.open(map, marker);
                 // clear marker property
                 infowindow.addListener('closeclick', function() {
