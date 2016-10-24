@@ -3,6 +3,7 @@ $(document).ready(function() {
     
     var map;
     var markers = [];
+    var polygon = null;
 
     // Create new map
     function initMap() {
@@ -62,12 +63,16 @@ $(document).ready(function() {
             mapTypeControl: false
         });
 
+        // set the locations that will be shown on the map
         var locations = [
-            {title: 'Sri Lanka', location: {lat: 7.873054, lng: 80.771797}},
+            // {title: 'Sri Lanka', location: {lat: 7.873054, lng: 80.771797}},
             {title: 'ValTech Eindhoven', location: {lat: 51.443442, lng: 5.46138}},
             {title: 'Sharon', location: {lat:  51.642632, lng: 4.541374}},
-            {title: 'Australia', location: {lat:  -25.274398, lng: 133.775136}},
-            {title: 'Canada', location: {lat:  56.130366, lng: -106.346771}}
+            {title: 'Sagrada de Familia', location: {lat:  41.403999, lng: 2.1738}, heading: 135},
+            // {title: 'La Sagrada Familia', location: {lat:  41.403927, lng: 2.17393}},
+            {title: 'La Sagrada Familia', location: {lat:  41.404051, lng: 2.174995}, heading: 225}
+            // {title: 'Australia', location: {lat:  -25.274398, lng: 133.775136}}
+            // {title: 'Canada', location: {lat:  56.130366, lng: -106.346771}}
         ];
 
         var largeInfowindow = new google.maps.InfoWindow({
@@ -75,28 +80,45 @@ $(document).ready(function() {
         });
         var bounds = new google.maps.LatLngBounds();
 
+        /*
+         * Initialize the drawing manager
+         */
+        var drawingManager = new google.maps.drawing.DrawingManager({
+            drawingMode: google.maps.drawing.OverlayType.POLYGON, 
+            drawingControl: true,
+            drawingControlOptions: {
+                position: google.maps.ControlPosition.TOP_LEFT, 
+                drawingModes: [
+                    google.maps.drawing.OverlayType.POLYGON
+                ]
+            }
+        });
+
         var defaultIcon = {
             url: 'http://findicons.com/files/icons/2498/party_elements/256/2.png',
             scaledSize: new google.maps.Size(25, 25), // scaled size
             origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(0, 0)
+            anchor: new google.maps.Point(15, 15)
         }
         var highlightedIcon = {
             url: 'http://findicons.com/files/icons/2498/party_elements/256/2.png',
             scaledSize: new google.maps.Size(35, 35), // scaled size
             origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(5, 5)
+            anchor: new google.maps.Point(20, 20)
         }
 
 
         for (var i = 0; i < locations.length; i++) {
             var position = locations[i].location;
             var title = locations[i].title;
+            var heading = locations[i].heading;
+            console.log(locations[i].heading);
 
             var marker = new google.maps.Marker({
                 map: map,
                 position: position,
                 title: title,
+                heading: heading,
                 icon: defaultIcon,
                 animation: google.maps.Animation.DROP,
                 id: i
@@ -121,20 +143,83 @@ $(document).ready(function() {
 
         $('#show-listings').on('click', showListings);
         $('#hide-listings').on('click', hideListings);
+        $('#toggle-drawing').on('click', function() {
+            toggleDrawing(drawingManager);
+        });
 
+        /* 
+         * When the polygon is drawed, 
+         * the searchWithinPolyong function has to be called.
+         * This will show the markers inside, 
+         * and hide any markers outside of the polygon.
+         */
+        drawingManager.addListener('overlaycomplete', function(event) {
+            // Check if a polygon exists
+            // if there is, get rid of it and remove the markers
+            if (polygon) {
+                polygon.setMap(null);
+                hideListings();
+            }
+            // Switch the drawing mode to hand, so no more drawing
+            drawingManager.setDrawingMode(null);
+            // Creating a new editable polygon from overlay 
+            polygon = event.overlay;
+            polygon.setEditable(true);
+            // Search within polygon
+            searchWithinPolygon();
+            // Make sure to search again when the polygon is changed
+            polygon.getPath().addListener('set_at', searchWithinPolygon);
+            polygon.getPath().addListener('insert_at', searchWithinPolygon);
+        });
+
+        /* 
+         * set infowindow, when to load and what it contains
+         * also streetview is added
+         */
         function populateInfoWindow(marker, infowindow) {
             if (infowindow.marker != marker) {
+                // clear infowindow to give streetview time to load
+                infowindow.setContent('');
                 infowindow.marker = marker;
-                infowindow.setContent('<div>' + marker.title + ' ' + marker.position + '</div>');
-                infowindow.open(map, marker);
                 // clear marker property
                 infowindow.addListener('closeclick', function() {
                     infowindow.marker = null;
                 });
-            };
-        };
+                // set streetview
+                var streetViewService = new google.maps.StreetViewService();
+                var radius = 50;
 
-        // loop through markers and display them
+                /*
+                 * set streetview function
+                 */ 
+                function getStreetView(data, status) {
+                    if(status == google.maps.StreetViewStatus.OK) {
+                        var nearStreetViewLocation = data.location.latLng; 
+                        var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.position);
+                        infowindow.setContent('<div>' + marker.title + '</div><br><div id="pano"></div>');
+                        console.log(marker.heading);
+                        var panoramaOptions = {
+                            position: nearStreetViewLocation,
+                            pov: {
+                                heading: marker.heading,
+                                pitch: 35
+                            }
+                        };
+                        var panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+                    } else {
+                        infowindow.setContent('<div>' + marker.title + '</div>' + '<br><div>No Streetview found</div>');
+                    }
+                }
+                // Use streetview service to get the closest streetview image within
+                streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+                // Open window on correct marker
+                infowindow.open(map, marker);
+            }
+        }
+
+        /*
+         * loop through markers and display them
+         */
         function showListings() {
             var bounds = new google.maps.LatLngBounds();
             //extend boundaries map
@@ -144,28 +229,48 @@ $(document).ready(function() {
             }
             map.fitBounds(bounds);
         }
-        // loop through markers and hide them
+
+        /*
+         * loop through markers and hide them
+         */
         function hideListings() {
             for (var i = 0; i < markers.length; i++) {
                 markers[i].setMap(null);
             }
         }
 
-        // var tribeca = {lat: -20, lng: 100};
-        // var marker = new google.maps.Marker({
-        //     position: tribeca,
-        //     map: map,
-        //     title: 'First Marker'
-        // });
-        // var infowindow = new google.maps.InfoWindow({
-        //     content: 'Hi I am info'
-        // });
-        // marker.addListener('click', function() {
-        //     infowindow.open(map, marker);
-        // });
+        /*
+         * this shows and hides (respectively) the drawing options
+         */
+        function toggleDrawing(drawingManager) {
+            if(drawingManager.map) {
+                drawingManager.setMap(null);
+                // In case the user switches off drawing and drew anything, get rid of the polygon
+                if (polygon) {
+                    polygon.setMap(null);
+                }
+            } else {
+                drawingManager.setMap(map);
+            }
+        }
+
+        /*
+         * hide all markers outside polygon,
+         * only show the ones within it.
+         * This way the user can specify exact area of search!
+         */
+        function searchWithinPolygon() {
+            for (var i = 0; i < markers.length; i++) {
+                if (google.maps.geometry.poly.containsLocation(markers[i].position, polygon)) {
+                    markers[i].setMap(map);
+                } else {
+                    markers [i].setMap(null);
+                }
+            }
+        }
+
     };
     initMap();
 
 });
-
 

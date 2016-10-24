@@ -10,15 +10,19 @@
             <div class="options-box">
                 <h1>Where would you go?</h1>
                 <div>
-                    <input id="show-listings" type="button" value="Show markers">
-                    <input id="hide-listings" type="button" value="Hide markers">
+                    <input class="button" id="show-listings" type="button" value="Show markers">
+                    <input class="button" id="hide-listings" type="button" value="Hide markers">
+                    <hr>
+                    <span class="text">Draw a shape to make the decision where to go easier!</span>
+                    <br>
+                    <input class="button" id="toggle-drawing" type="button" value="Drawing Tools">
                 </div>
             </div>
             <div id="map"></div>
         </section>
 
             <script src="../node_modules/jquery/dist/jquery.min.js"></script>
-            <script src="https://maps.googleapis.com/maps/api/js?v=3&key=YOUR_API_KEY"></script>
+            <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing,geometry&key=YOUR-GOOGLE-API&v=3"></script>
             <script src="../public/js/google-maps-api.js"></script>
     </body>
 </html>

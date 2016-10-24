@@ -9,10 +9,13 @@
   margin: 50px 0; }
   .google-maps-section #map {
     height: 500px; }
+  .google-maps-section #pano {
+    width: 200px;
+    height: 200px; }
   .google-maps-section .options-box {
-    height: 100px;
+    height: 200px;
     vertical-align: middle; }
-    .google-maps-section .options-box #show-listings, .google-maps-section .options-box #hide-listings {
+    .google-maps-section .options-box .button {
       padding: 8px;
       margin: 3px;
       box-shadow: 0 0 5px #eeeeee;
@@ -21,6 +24,6 @@
       border: none;
       border-radius: 5px;
       cursor: pointer; }
-    .google-maps-section .options-box #show-listings:hover, .google-maps-section .options-box #hide-listings:hover {
+    .google-maps-section .options-box .button:hover {
       box-shadow: 1px 1px 6px #888888;
       background-color: #3ec7c9; }

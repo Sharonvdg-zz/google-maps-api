@@ -11,13 +11,16 @@
     #map {
         height: 500px;
     }
+    #pano {
+        width: 200px;
+        height: 200px;
+    }
 
     .options-box {
-        height: 100px;
+        height: 200px;
         vertical-align: middle;
-        // width: 200px;
 
-        #show-listings, #hide-listings {
+        .button {
             padding: 8px;
             margin: 3px;
             box-shadow: 0 0 5px #eeeeee;
@@ -27,7 +30,7 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        #show-listings:hover, #hide-listings:hover {
+        .button:hover {
             box-shadow: 1px 1px 6px #888888;
             background-color: #3ec7c9;
         }
