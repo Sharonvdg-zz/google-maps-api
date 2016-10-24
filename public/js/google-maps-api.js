@@ -167,9 +167,17 @@ $(document).ready(function() {
             polygon.setEditable(true);
             // Search within polygon
             searchWithinPolygon();
+            // Calculate area polygon
+            calculatePolygonArea(polygon);
             // Make sure to search again when the polygon is changed
-            polygon.getPath().addListener('set_at', searchWithinPolygon);
-            polygon.getPath().addListener('insert_at', searchWithinPolygon);
+            polygon.getPath().addListener('set_at', function() {
+                searchWithinPolygon();
+                calculatePolygonArea();
+            });
+            polygon.getPath().addListener('insert_at', function() {
+                searchWithinPolygon();
+                calculatePolygonArea();
+            });
         });
 
         /* 
@@ -269,6 +277,10 @@ $(document).ready(function() {
             }
         }
 
+        function calculatePolygonArea() {
+            var polygonArea = google.maps.geometry.spherical.computeArea(polygon.getPath());
+            console.log('polygonArea:', polygonArea);
+        }
     };
     initMap();
 
