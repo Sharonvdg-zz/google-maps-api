@@ -13,7 +13,7 @@
     width: 200px;
     height: 200px; }
   .google-maps-section .options-box {
-    height: 250px;
+    height: 200px;
     vertical-align: middle; }
     .google-maps-section .options-box .button {
       padding: 8px;
@@ -23,10 +23,8 @@
       color: white;
       border: none;
       border-radius: 5px;
-      cursor: pointer; }
+      cursor: pointer;
+      width: 10px; }
     .google-maps-section .options-box .button:hover {
       box-shadow: 1px 1px 6px #888888;
       background-color: #3ec7c9; }
-    .google-maps-section .options-box .txt-input {
-      width: 200px;
-      padding: 10px; }

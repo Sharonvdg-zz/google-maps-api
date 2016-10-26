@@ -17,7 +17,7 @@
     }
 
     .options-box {
-        height: 200px;
+        height: 250px;
         vertical-align: middle;
 
         .button {
@@ -33,6 +33,11 @@
         .button:hover {
             box-shadow: 1px 1px 6px #888888;
             background-color: #3ec7c9;
+        }
+
+        .txt-input {
+            width: 200px;
+            padding: 10px;
         }
     }
 

@@ -146,6 +146,9 @@ $(document).ready(function() {
         $('#toggle-drawing').on('click', function() {
             toggleDrawing(drawingManager);
         });
+        $('#zoom-to-area').on('click', function() {
+            zoomToArea();
+        });
 
         /* 
          * When the polygon is drawed, 
@@ -277,12 +280,47 @@ $(document).ready(function() {
             }
         }
 
+        /*
+         * calculate the polygon area
+         * log this in the console, it's in square meters
+         */
         function calculatePolygonArea() {
             var polygonArea = google.maps.geometry.spherical.computeArea(polygon.getPath());
             console.log('polygonArea:', polygonArea);
         }
+
+        /* 
+         * takes input value to find nearby area of the text input
+         * located and zoomed in. User can show all and then decide to focus on one area of the map.
+         */
+        function zoomToArea() {
+            //Initialize geocoder
+            var geocoder = new google.maps.Geocoder();
+            // Get the addres of the user
+            var address = document.getElementById('zoom-to-area-text').value;
+            // Is the address filled in??
+            if (address == '') {
+                window.alert('You must enter an area or address.'); 
+            } else {
+                // Geocode the entered value and then center and zoom in
+                geocoder.geocode({
+                    address: address,
+                    componentRestrictions: {country: 'Nederland'}
+                }, function(result, status) {
+                    console.log(result[0]);
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        map.setCenter(result[0].geometry.location);
+                        map.setZoom(25);
+                    } else {
+                        window.alert('We could not find the location. Try entering a more specific place.')
+                    }
+                });
+            }
+        }
+
     };
     initMap();
+
 
 });
 
