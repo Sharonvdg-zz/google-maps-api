@@ -14,7 +14,9 @@
     height: 200px; }
   .google-maps-section .options-box {
     height: 250px;
-    vertical-align: middle; }
+    vertical-align: middle;
+    float: left;
+    width: 500px; }
     .google-maps-section .options-box .button {
       padding: 8px;
       margin: 3px;

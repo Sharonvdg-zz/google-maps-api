@@ -310,7 +310,11 @@ $(document).ready(function() {
                     console.log(result[0]);
                     if (status == google.maps.GeocoderStatus.OK) {
                         map.setCenter(result[0].geometry.location);
-                        map.setZoom(25);
+                        map.setZoom(20);
+                        // Put the formatted address and the location on the page
+                        console.log("The formatted address is " + result[0].formatted_address);
+                        $('#firstComponent').html("The formatted address is " + result[0].formatted_address);
+                        $('#secondComponent').html("The location is " + result[0].geometry.location);
                     } else {
                         window.alert('We could not find the location. Try entering a more specific place.')
                     }
