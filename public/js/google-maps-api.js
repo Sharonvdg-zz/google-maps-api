@@ -1,5 +1,4 @@
 $(document).ready(function() {
-    console.log( "ready!" );
     
     var map;
     var markers = [];
@@ -66,11 +65,12 @@ $(document).ready(function() {
         // set the locations that will be shown on the map
         var locations = [
             // {title: 'Sri Lanka', location: {lat: 7.873054, lng: 80.771797}},
-            {title: 'ValTech Eindhoven', location: {lat: 51.443442, lng: 5.46138}},
-            {title: 'Sharon', location: {lat:  51.642632, lng: 4.541374}},
-            {title: 'Sagrada de Familia', location: {lat:  41.403999, lng: 2.1738}, heading: 135},
-            // {title: 'La Sagrada Familia', location: {lat:  41.403927, lng: 2.17393}},
-            {title: 'La Sagrada Familia', location: {lat:  41.404051, lng: 2.174995}, heading: 225}
+            {title: 'ValTech Eindhoven', location: {lat: 51.443442, lng: 5.46138}, heading: 135, pitch: 25},
+            {title: 'Cederlaan', location: {lat:  51.445304, lng: 5.450547}, heading: 25, pitch: 25},
+            {title: 'SSC Eindhoven', location: {lat:  51.451917, lng: 5.489120}, heading: -15, pitch: 8},
+            {title: 'station Eindhoven', location: {lat:  51.442141, lng: 5.479949}, heading: 0, pitch: 15}
+            // {title: 'Sagrada de Familia', location: {lat:  41.403999, lng: 2.1738}, heading: 135, pitch: 35},
+            // {title: 'La Sagrada Familia', location: {lat:  41.404051, lng: 2.174995}, heading: 225, pitch: 35}
             // {title: 'Australia', location: {lat:  -25.274398, lng: 133.775136}}
             // {title: 'Canada', location: {lat:  56.130366, lng: -106.346771}}
         ];
@@ -112,13 +112,14 @@ $(document).ready(function() {
             var position = locations[i].location;
             var title = locations[i].title;
             var heading = locations[i].heading;
-            console.log(locations[i].heading);
+            var pitch = locations[i].pitch;
 
             var marker = new google.maps.Marker({
                 map: map,
                 position: position,
                 title: title,
                 heading: heading,
+                pitch: pitch,
                 icon: defaultIcon,
                 animation: google.maps.Animation.DROP,
                 id: i
@@ -208,14 +209,14 @@ $(document).ready(function() {
                         var nearStreetViewLocation = data.location.latLng; 
                         var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.position);
                         infowindow.setContent('<div>' + marker.title + '</div><br><div id="pano"></div>');
-                        console.log(marker.heading);
                         var panoramaOptions = {
                             position: nearStreetViewLocation,
                             pov: {
                                 heading: marker.heading,
-                                pitch: 35
+                                pitch: marker.pitch
                             }
                         };
+                        console.log(marker.pitch);
                         var panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
                     } else {
                         infowindow.setContent('<div>' + marker.title + '</div>' + '<br><div>No Streetview found</div>');
@@ -275,7 +276,7 @@ $(document).ready(function() {
                 if (google.maps.geometry.poly.containsLocation(markers[i].position, polygon)) {
                     markers[i].setMap(map);
                 } else {
-                    markers [i].setMap(null);
+                    markers[i].setMap(null);
                 }
             }
         }
@@ -307,14 +308,20 @@ $(document).ready(function() {
                     address: address,
                     componentRestrictions: {country: 'Nederland'}
                 }, function(result, status) {
-                    console.log(result[0]);
                     if (status == google.maps.GeocoderStatus.OK) {
                         map.setCenter(result[0].geometry.location);
                         map.setZoom(20);
                         // Put the formatted address and the location on the page
-                        console.log("The formatted address is " + result[0].formatted_address);
                         $('#firstComponent').html("The formatted address is " + result[0].formatted_address);
                         $('#secondComponent').html("The location is " + result[0].geometry.location);
+
+                        var marker = new google.maps.Marker({
+                            position: result[0].geometry.location,
+                            // heading: heading,
+                            icon: highlightedIcon,
+                            animation: google.maps.Animation.DROP
+                        });
+                        marker.setMap(map);
                     } else {
                         window.alert('We could not find the location. Try entering a more specific place.')
                     }

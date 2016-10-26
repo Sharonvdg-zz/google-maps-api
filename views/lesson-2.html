@@ -16,23 +16,25 @@
                     <input class="button" id="show-listings" type="button" value="Show markers">
                     <input class="button" id="hide-listings" type="button" value="Hide markers">
                     <hr>
-                    <span class="text">Select where to go!</span>
+                    <span class="text">Select an area</span>
                     <br>
                     <input class="button" id="toggle-drawing" type="button" value="Drawing Tools">
                 </div>
                 <hr>
                 <div>
-                    <input class="txt-input" id="zoom-to-area-text" type="text" placeholder="Enter your favorite area!">
+                    <input class="txt-input" id="zoom-to-area-text" type="text" placeholder="Find your favorite area!">
                     <input class="button" id="zoom-to-area" type="button" value="Zoom">
-                    <div id="firstComponent"></div>
-                    <div id="secondComponent"></div>
+                    <p>
+                        <div id="firstComponent"></div>
+                        <div id="secondComponent"></div>
+                    </p>
                 </div>
             </div>
             <div id="map"></div>
         </section>
 
             <script src="../node_modules/jquery/dist/jquery.min.js"></script>
-            <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing,geometry&key=XXX&v=3"></script>
+            <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing,geometry&key=AIzaSyBYXhRcKr1yoeIMzIbM_dbOmUc4VOraOek&v=3"></script>
             <script src="../public/js/google-maps-api.js"></script>
     </body>
 </html>
